@@ -47,6 +47,7 @@ module Wallace_Tree_Multiplier (
 ## Compile & Run
 ```bash
 cd generator
+chmod +x run.sh	
 ./run.sh        # Execute Code Generator
 cd ..
 make            # Compile Verilog & tb
