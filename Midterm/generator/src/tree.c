@@ -27,6 +27,9 @@ static void carry_save_op(int width)
 
     enqueue(carry, TYPE_CS);
     enqueue(sum, TYPE_CS);
+    free(p1);
+    free(p2);
+    free(p3);
 }
 
 static void final_adder_op(int width)
@@ -43,6 +46,8 @@ static void final_adder_op(int width)
     sprintf(cla[2], cla_t[2], p1->name, p2->name, "1'b0");
     for (int i = 0; i < 3; i++)
         printf("\t%s\n", cla[i]);
+    free(p1);
+    free(p2);
 }
 
 void tree_process(int width)
