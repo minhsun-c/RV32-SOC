@@ -4,8 +4,14 @@ queue_t *queue = NULL;
 
 void construct_queue()
 {
-    queue = (queue_t *)malloc(sizeof(queue_t));
-    queue->head = (qnode_t *)malloc(sizeof(qnode_t));
+    if ((queue = (queue_t *)malloc(sizeof(queue_t))) == NULL) {
+        perror("Mempry Allocation Error");
+        exit(EXIT_FAILURE);
+    }
+    if ((queue -> head = (qnode_t *)malloc(sizeof(qnode_t))) == NULL) {
+        perror("Mempry Allocation Error");
+        exit(EXIT_FAILURE);
+    }
     queue->head->next = NULL;
     queue->size = 0;
 }
@@ -17,9 +23,13 @@ void enqueue(char *name, int type)
     qnode_t *ptr = queue->head;
     while (ptr->next)
         ptr = ptr->next;
-    ptr->next = (qnode_t *)malloc(sizeof(qnode_t));
+    if ((ptr -> next = (qnode_t *)malloc(sizeof(qnode_t))) == NULL) {
+        perror("Mempry Allocation Error");
+        exit(EXIT_FAILURE);
+    }
     strncpy(ptr->next->name, name, strlen(name));
     ptr->next->type = type;
+    ptr->next->next = NULL;
     queue->size++;
 }
 
