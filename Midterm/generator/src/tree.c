@@ -40,7 +40,7 @@ static void final_adder_op(int width)
     /* instantiate cla */
     sprintf(cla[0], cla_t[0], width);
     sprintf(cla[1], cla_t[1], "", "product_o");
-    sprintf(cla[2], cla_t[2], p1->name, p2->name, "");
+    sprintf(cla[2], cla_t[2], p1->name, p2->name, "1'b0");
     for (int i = 0; i < 3; i++)
         printf("\t%s\n", cla[i]);
 }
