@@ -159,5 +159,5 @@ module Wallace_Tree_Multiplier (
 		.A_i(tree55), .B_i(tree56), .C_i(tree57));
 	Carry_Lookahead_Adder #(64) CLA (
 		.carry_o(), .sum_o(product_o),
-		.A_i(tree58), .B_i(tree59), .carry_i());
+		.A_i(tree58), .B_i(tree59), .carry_i(1'b0));
 endmodule
