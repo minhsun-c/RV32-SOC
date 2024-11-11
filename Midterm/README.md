@@ -49,19 +49,19 @@ module Wallace_Tree_Multiplier (
 
 ## Code Explaination
 - 產生 partial products: 根據 `B_i[]` 決定 `A_i` 是否累加至乘法的結果
-    ```
+    ```verilog
     wire [63 : 0] ppdt2;
     assign ppdt2 = {30'b0, A_i & {32{B_i[2]}}, 2'b0};
     ```
 - 產生新的 partial products: 透過 carry save adder 得到新的 partial products
-    ```
+    ```verilog
     wire [63 : 0] tree0, tree1; /* New partial products */
 	Carry_Save_Adder #(64) CSA0 (
 		.carry_o(tree0), .sum_o(tree1),
 		.A_i(ppdt0), .B_i(ppdt1), .C_i(ppdt2));
     ```
 - 最後剩餘 2 個 partial products 透過 carry lookahead adder 產生最終結果
-    ```
+    ```verilog
     Carry_Lookahead_Adder #(64) CLA (
 		.carry_o(), .sum_o(product_o),
 		.A_i(tree58), .B_i(tree59), .carry_i(1'b0));
