@@ -22,9 +22,14 @@ void one_cycle(Vwallace_tree *top, VerilatedVcdC *tfp)
 {
     top->A_i = rand() | 0x8000;
     top->B_i = rand() | 0x8000;
+    uint64_t A = (uint64_t)top->A_i;
+    uint64_t B = (uint64_t)top->B_i;
+    uint64_t ans = A * B;
     top->eval();
-    printf("%d * %d = %llu\n",
-           top->A_i, top->B_i, top->product_o);
+    printf("%llu * %llu = %llu\n",
+           A, B, (uint64_t)top->product_o);
+    if (A * B != ans)
+        printf("[Answer: %ll]\n", ans);
     main_time += TIME_UNIT;
     tfp->dump(main_time);
 }
