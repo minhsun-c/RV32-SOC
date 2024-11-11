@@ -23,6 +23,9 @@ module Wallace_Tree_Multiplier (
     > - Wallace Tree Multiplier 是由 Array Multiplier 演化而來。
     > - Array Multiplier 在累加 partial products 時，皆以一般的加法器來運算，但不論是哪一種加法器 (CRA, CLA, ...) 都會因為等待進位而造成延遲。
     > - Wallace Tree Multiplier 使用的 Carry Save Adder 較為不同的是各個位元的 Carry 間無任何關係，因此不會產生上述的延遲。這也是 Wallace Tree Multiplier 被稱作高速加法器的原因。
+- Why Carry Lookahead Adder
+    > - 透過 propagate, generate 可以判定哪些進位必定會產生，哪些進位必定不會產生
+    > - 若可以先判定哪些進位必定會產生，那麼後續的計算就不用等待前面計算完再開始。
 - Disadvantage?
     > - 由於 Wallace Tree Multiplier 為樹狀結構加法器，在 Placement 階段會造成 Layout 無法變得較方正，造成硬體面積的浪費。(vs. Array Multiplier)
 
@@ -44,6 +47,25 @@ module Wallace_Tree_Multiplier (
 2. Carry Save Operation 其實就是從 Queue 中取出 3 個 partial product，再將產生的 2 個 partial product 加入 Queue，直到 Queue->size 為 2 ，改以 Carry Lookahead Adder 結尾
 3. 未來若想要產生其他 size 的乘法器，僅需更改參數 width 即可
 
+## Code Explaination
+- 產生 partial products: 根據 `B_i[]` 決定 `A_i` 是否累加至乘法的結果
+    ```
+    wire [63 : 0] ppdt2;
+    assign ppdt2 = {30'b0, A_i & {32{B_i[2]}}, 2'b0};
+    ```
+- 產生新的 partial products: 透過 carry save adder 得到新的 partial products
+    ```
+    wire [63 : 0] tree0, tree1; /* New partial products */
+	Carry_Save_Adder #(64) CSA0 (
+		.carry_o(tree0), .sum_o(tree1),
+		.A_i(ppdt0), .B_i(ppdt1), .C_i(ppdt2));
+    ```
+- 最後剩餘 2 個 partial products 透過 carry lookahead adder 產生最終結果
+    ```
+    Carry_Lookahead_Adder #(64) CLA (
+		.carry_o(), .sum_o(product_o),
+		.A_i(tree58), .B_i(tree59), .carry_i(1'b0));
+    ```
 ## Compile & Run
 ```bash
 cd generator
