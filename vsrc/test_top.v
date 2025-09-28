@@ -59,8 +59,11 @@ wire[`RADDR_WIDTH-1:0] mem_wb_reg_waddr_o;
 wire mem_wb_reg_we_o;
 wire[`RDATA_WIDTH-1:0] mem_wb_reg_wdata_o;
 
-
-
+// fw unit
+wire fw_en1_o;
+wire fw_en2_o;
+wire [`RDATA_WIDTH-1:0] fw_data1_o;
+wire [`RDATA_WIDTH-1:0] fw_data2_o;
 
 pc_reg pc_reg0(
     .rst_i(rst_i),
@@ -90,7 +93,30 @@ if_id if_id0(
     .inst_o(if_id_inst_o)
 );
 
+// FW unit
+ForwardingUnit FW(
+    //from id
+    .reg1_raddr_i(id_reg1_addr_o),
+    .reg2_raddr_i(id_reg2_addr_o),
+    .reg1_re_i(id_reg1_re_o),
+    .reg2_re_i(id_reg2_re_o),
 
+    //from exe
+    .exe_reg_waddr_i(exe_reg_waddr_o),
+    .exe_reg_wdata_i(exe_reg_wdata_o),
+    .exe_reg_we_i(exe_reg_we_o),
+
+    //from mem
+    .mem_reg_waddr_i(mem_reg_waddr_o),
+    .mem_reg_wdata_i(mem_reg_wdata_o),
+    .mem_reg_we_i(mem_reg_we_o),
+    
+    // to id
+    .fw_en1_o(fw_en1_o),
+    .fw_en2_o(fw_en2_o),
+    .fw_data1_o(fw_data1_o),
+    .fw_data2_o(fw_data2_o)
+);
 
 
 //ID
@@ -105,17 +131,6 @@ id id0(
     .reg1_rdata_i(reg1_data_o),
     .reg2_rdata_i(reg2_data_o),
 
-    //from exe
-    .exe_reg_waddr_i(exe_reg_waddr_o),
-    .exe_reg_wdata_i(exe_reg_wdata_o),
-    .exe_reg_we_i(exe_reg_we_o),
-
-    //from mem
-    .mem_reg_waddr_i(mem_reg_waddr_o),
-    .mem_reg_wdata_i(mem_reg_wdata_o),
-    .mem_reg_we_i(mem_reg_we_o),
-
-
     //to regfile
     .reg1_raddr_o(id_reg1_addr_o),
     .reg2_raddr_o(id_reg2_addr_o),
@@ -127,7 +142,13 @@ id id0(
     .op1_o(id_op1_o),
     .op2_o(id_op2_o),
     .reg_we_o(id_reg_we_o),
-    .reg_waddr_o(id_reg_waddr_o)
+    .reg_waddr_o(id_reg_waddr_o),
+
+    // from fw
+    .fw_en1_o(fw_en1_o),
+    .fw_en2_o(fw_en2_o),
+    .fw_data1_o(fw_data1_o),
+    .fw_data2_o(fw_data2_o)
 );
     
 //regfile

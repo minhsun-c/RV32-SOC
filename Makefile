@@ -7,6 +7,7 @@ V_SRC += $(wildcard ./vsrc/id/*.v)
 V_SRC += $(wildcard ./vsrc/exe/*.v)
 V_SRC += $(wildcard ./vsrc/mem/*.v)
 V_SRC += $(wildcard ./vsrc/wb/*.v)
+V_SRC += $(wildcard ./vsrc/ctrl/*.v)
 
 TESTBENCH_SRC = $(wildcard ./tb/*.cpp)
 VTOP = ./vsrc/${TOP}.v

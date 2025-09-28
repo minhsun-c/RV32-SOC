@@ -1,25 +1,15 @@
 `include "defines.v"
 
 module id(
-    input wire rst_i,
+    input  rst_i,
     
     //from if_id
-    input wire[`ADDR_WIDTH-1:0] inst_addr_i,
-    input wire[`DATA_WIDTH-1:0] inst_i,
+    input [`ADDR_WIDTH-1:0] inst_addr_i,
+    input [`DATA_WIDTH-1:0] inst_i,
     
     //from regfile
-    input wire[`RDATA_WIDTH-1:0] reg1_rdata_i,
-    input wire[`RDATA_WIDTH-1:0] reg2_rdata_i,
-
-    //from exe
-    input wire[`RADDR_WIDTH-1:0] exe_reg_waddr_i,
-    input wire[`RDATA_WIDTH-1:0] exe_reg_wdata_i,
-    input wire exe_reg_we_i,
-
-    //from mem
-    input wire[`RADDR_WIDTH-1:0] mem_reg_waddr_i,
-    input wire[`RDATA_WIDTH-1:0] mem_reg_wdata_i,
-    input wire mem_reg_we_i,
+    input [`RDATA_WIDTH-1:0] reg1_rdata_i,
+    input [`RDATA_WIDTH-1:0] reg2_rdata_i,
        
     // to regfile
     output reg[`RADDR_WIDTH-1:0] reg1_raddr_o,
@@ -34,7 +24,13 @@ module id(
     output reg reg_we_o,
     output reg[`RADDR_WIDTH-1:0] reg_waddr_o,
 
-    );
+    // from FW unit
+    input fw_en1_o,
+    input fw_en2_o,
+    input [`RDATA_WIDTH-1:0] fw_data1_o,
+    input [`RDATA_WIDTH-1:0] fw_data2_o
+
+);
 
     reg[`RDATA_WIDTH-1:0] op1_o_final;
     reg[`RDATA_WIDTH-1:0] op2_o_final;
@@ -139,28 +135,24 @@ module id(
                 end//default
             endcase
         end//if
-    end//always
+    end
 
  	//determine op1_o
 	always @(*) begin
-        if (reg1_re_o == `READ_ENABLE && exe_reg_we_i == `WRITE_ENABLE && exe_reg_waddr_i == reg1_raddr_o) begin
-            op1_o = (|reg1_raddr_o)? exe_reg_wdata_i:`ZERO;
-        end else if(reg1_re_o == `READ_ENABLE && mem_reg_we_i == `WRITE_ENABLE && mem_reg_waddr_i == reg1_raddr_o) begin
-            op1_o =(|reg1_raddr_o)? mem_reg_wdata_i:`ZERO;
+        if (fw_en1_o) begin
+            op1_o = fw_data1_o;
         end else begin
             op1_o = op1_o_final;
         end
-	end//always
+	end
 
 	//determine op2_o
 	always @(*) begin
-        if (reg2_re_o == `READ_ENABLE && exe_reg_we_i == `WRITE_ENABLE && exe_reg_waddr_i == reg2_raddr_o) begin
-            op2_o = (|reg2_raddr_o) ? exe_reg_wdata_i : `ZERO;
-        end else if(reg2_re_o == `READ_ENABLE && mem_reg_we_i == `WRITE_ENABLE && mem_reg_waddr_i == reg2_raddr_o) begin
-            op2_o = (|reg2_raddr_o)? mem_reg_wdata_i:`ZERO;
+        if (fw_en2_o) begin
+            op2_o = fw_data2_o;
         end else begin
             op2_o = op2_o_final;
         end
-	end//always
+	end
 endmodule
 
