@@ -42,3 +42,6 @@ clean:
 	rm -rf obj_dir wave.vcd
 	rm -rf test_src/*.elf test_src/*.bin
 
+.PHONY : indent
+indent:
+	clang-format -i tb/*.cpp
