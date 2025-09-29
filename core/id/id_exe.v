@@ -1,26 +1,26 @@
 `include "defines.v"
 
-module id_exe(
-    input                       rst_i,
-    input                       clk_i,
-    
+module id_exe (
+    input rst_i,
+    input clk_i,
+
     // from id
-    input [`RDATA_WIDTH-1:0]    op1_i,
-    input [`RDATA_WIDTH-1:0]    op2_i,
-    input                       reg_we_i,
-    input [`RADDR_WIDTH-1:0]    reg_waddr_i,
-    input [`DATA_WIDTH-1:0]     inst_i,
-    input [`ADDR_WIDTH-1:0]     inst_addr_i,
+    input [`RDATA_WIDTH-1:0] op1_i,
+    input [`RDATA_WIDTH-1:0] op2_i,
+    input                    reg_we_i,
+    input [`RADDR_WIDTH-1:0] reg_waddr_i,
+    input [ `DATA_WIDTH-1:0] inst_i,
+    input [ `ADDR_WIDTH-1:0] inst_addr_i,
 
     //to exe
-    output reg[`RDATA_WIDTH-1:0] op1_o,
-    output reg[`RDATA_WIDTH-1:0] op2_o,
-    output reg                   reg_we_o,
-    output reg[`RADDR_WIDTH-1:0] reg_waddr_o,
-    output reg[`ADDR_WIDTH-1:0]  inst_addr_o,
-    output reg[`DATA_WIDTH-1:0]  inst_o
+    output reg [`RDATA_WIDTH-1:0] op1_o,
+    output reg [`RDATA_WIDTH-1:0] op2_o,
+    output reg                    reg_we_o,
+    output reg [`RADDR_WIDTH-1:0] reg_waddr_o,
+    output reg [ `ADDR_WIDTH-1:0] inst_addr_o,
+    output reg [ `DATA_WIDTH-1:0] inst_o
 );
-    wire[6:0] opcode = inst_i[6:0];
+    wire [6:0] opcode = inst_i[6:0];
 
     always @(posedge clk_i) begin
         if (rst_i) begin
@@ -37,7 +37,7 @@ module id_exe(
             reg_we_o    <= reg_we_i;
             reg_waddr_o <= reg_waddr_i;
             inst_addr_o <= inst_addr_i;
-        end//if
-    end //always
+        end  //if
+    end  //always
 endmodule
 

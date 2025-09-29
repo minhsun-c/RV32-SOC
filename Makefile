@@ -46,3 +46,4 @@ clean:
 .PHONY : indent
 indent:
 	clang-format -i tb/*.cpp
+	verible-verilog-format --flagfile .verible-format.flags $(V_SRC)
