@@ -12,20 +12,29 @@ V_SRC += $(wildcard ./core/ctrl/*.v)
 TESTBENCH_SRC = $(wildcard ./tb/*.cpp)
 VTOP = ./core/${TOP}.v
 INC = -Icore/include
-PROG = test
-PROG_S = $(wildcard ./test_src/*.S)
+
+# ---- Tests layout ----
+# Tests live in ./test/<name>/ with one test per folder
+TEST_ROOT := ./test
+TEST_DIRS := $(sort $(dir $(wildcard $(TEST_ROOT)/*/)))
+
+# Select test case: `make run PROG=test2`
+PROG ?= test1
+PROG_DIR := $(TEST_ROOT)/$(PROG)
+PROG_BIN := $(PROG_DIR)/$(PROG).bin
 
 .DEFAULT_GOAL := all
 all: rv32soc
 
-obj_dir/V${TOP}.mk: ${V_SRC} ${TESTBENCH_SRC} 
+obj_dir/V${TOP}.mk: ${V_SRC} ${TESTBENCH_SRC} $(PROG_BIN)
 	verilator --Wno-fatal --cc --exe --build ${TESTBENCH_SRC} ${INC} ${V_SRC} --trace
-	
-obj_dir/V${TOP}.exe : obj_dir/V${TOP}.mk
+
+obj_dir/V${TOP}.exe: obj_dir/V${TOP}.mk
 	$(MAKE) -C obj_dir -f V$(TOP).mk
 
-test_src/${PROG}.bin:
-	$(MAKE) -C test_src
+# Build the selected test: expects each test folder to provide its own Makefile
+$(PROG_BIN):
+	$(MAKE) -C $(PROG_DIR)
 
 .PHONY : rv32soc
 rv32soc: obj_dir/V${TOP}.mk
