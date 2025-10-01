@@ -1,10 +1,10 @@
 `include "defines.v"
 
 module id_type_r (
-    input wire [`DATA_WIDTH-1:0] inst_i,
+    input [`DATA_WIDTH-1:0] inst_i,
 
-    input wire [`RDATA_WIDTH-1:0] reg1_rdata_i,
-    input wire [`RDATA_WIDTH-1:0] reg2_rdata_i,
+    input [`RDATA_WIDTH-1:0] reg1_rdata_i,
+    input [`RDATA_WIDTH-1:0] reg2_rdata_i,
 
     output reg [`RADDR_WIDTH-1:0] reg1_raddr_o,
     output reg [`RADDR_WIDTH-1:0] reg2_raddr_o,
@@ -23,7 +23,7 @@ module id_type_r (
     wire [4:0] rs1 = inst_i[19:15];
     wire [4:0] rs2 = inst_i[24:20];
 
-    wire isType_r;
+    wire       isType_r;
     assign isType_r = (opcode == `INST_TYPE_R_M) && ((funct7 == 7'b0000000)||(funct7==7'b0100000));
 
     always @(*) begin

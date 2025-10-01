@@ -8,6 +8,7 @@ V_SRC += $(wildcard ./core/exe/*.v)
 V_SRC += $(wildcard ./core/mem/*.v)
 V_SRC += $(wildcard ./core/wb/*.v)
 V_SRC += $(wildcard ./core/ctrl/*.v)
+V_SRC += $(wildcard ./core/device/*.v)
 
 TESTBENCH_SRC = $(wildcard ./tb/*.cpp)
 VTOP = ./core/${TOP}.v
@@ -21,13 +22,14 @@ TEST_DIRS := $(sort $(dir $(wildcard $(TEST_ROOT)/*/)))
 # Select test case: `make run PROG=test2`
 PROG ?= test1
 PROG_DIR := $(TEST_ROOT)/$(PROG)
-PROG_BIN := $(PROG_DIR)/$(PROG).bin
+PROG_BIN := $(PROG_DIR)/test.bin
 
 .DEFAULT_GOAL := all
 all: rv32soc
 
 obj_dir/V${TOP}.mk: ${V_SRC} ${TESTBENCH_SRC} $(PROG_BIN)
-	verilator --Wno-fatal --cc --exe --build ${TESTBENCH_SRC} ${INC} ${V_SRC} --trace
+	verilator --top-module ${TOP}  --cc --exe --build ${TESTBENCH_SRC} ${INC} ${V_SRC} --trace
+# --Wno-fatal
 
 obj_dir/V${TOP}.exe: obj_dir/V${TOP}.mk
 	$(MAKE) -C obj_dir -f V$(TOP).mk
@@ -40,8 +42,8 @@ $(PROG_BIN):
 rv32soc: obj_dir/V${TOP}.mk
 
 .PHONY : run
-run: test_src/${PROG}.bin obj_dir/V${TOP}.exe 
-	obj_dir/V${TOP} test_src/${PROG}.bin
+run: ${PROG_BIN} obj_dir/V${TOP}.exe 
+	obj_dir/V${TOP} ${PROG_BIN}
 
 .PHONY : wave
 wave: run

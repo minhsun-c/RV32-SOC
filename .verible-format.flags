@@ -11,5 +11,5 @@
 --formal_parameters_alignment=align
 --named_parameter_alignment=align
 --named_port_alignment=align
---module_net_variable_alignment=flush-left
+--module_net_variable_alignment=align
 --port_declarations_alignment=align

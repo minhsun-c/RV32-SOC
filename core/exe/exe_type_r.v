@@ -14,8 +14,8 @@ module exe_type_r (
     wire [2:0] funct3 = inst_i[14:12];
     wire [6:0] funct7 = inst_i[31:25];
 
-    wire op1_ge_op2_signed;
-    wire op1_ge_op2_unsigned;
+    wire       op1_ge_op2_signed;
+    wire       op1_ge_op2_unsigned;
     assign op1_ge_op2_signed   = ($signed(op1_i) >= $signed(op2_i));
     assign op1_ge_op2_unsigned = (op1_i >= op2_i);
 

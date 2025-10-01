@@ -15,7 +15,7 @@ code: all
 
 .PHONY : hex
 hex: all
-	@hexdump -C test.bin
+	@hexdump -C test.bin | tee test.hex
 
 .PHONY : clean
 clean:

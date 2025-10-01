@@ -1,6 +1,6 @@
 .DS_Store
-.vscode/*
-*/obj_dir
+.vscode
+obj_dir
 obj_dir/*
 *.vcd
 *.bin

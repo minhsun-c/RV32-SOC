@@ -20,8 +20,8 @@ module regfile (
     output reg [`RDATA_WIDTH-1:0] rdata2_o
 );
 
-    reg [`RDATA_WIDTH-1:0] regs[0:`RNUM-1];
-    integer i;
+    reg     [`RDATA_WIDTH-1:0] regs[0:`RNUM-1];
+    integer                    i;
 
     initial begin
         for (i = 0; i < `RNUM; i = i + 1) regs[i] = 0;

@@ -16,7 +16,12 @@ module ForwardingUnit (
     input [`RADDR_WIDTH-1:0] mem_reg_waddr_i,
     input [`RDATA_WIDTH-1:0] mem_reg_wdata_i,
     input                    mem_reg_we_i,
+    input                    mem_load_i,
 
+    // to hdu
+    output load_use_stall_o,
+
+    // to id
     output                        fw_en1_o,
     output                        fw_en2_o,
     output reg [`RDATA_WIDTH-1:0] fw_data1_o,
@@ -28,6 +33,7 @@ module ForwardingUnit (
     assign fw_en1_o = (fw_op1_o != `FW_NONE);
     assign fw_en2_o = (fw_op2_o != `FW_NONE);
 
+    // Check op1
     always @(*) begin
         if (reg1_re_i == `READ_ENABLE && exe_reg_we_i == `WRITE_ENABLE && exe_reg_waddr_i == reg1_raddr_i) begin
             fw_op1_o = `FW_EXE_EXE;
@@ -50,6 +56,7 @@ module ForwardingUnit (
         end
     end
 
+    // Check op2
     always @(*) begin
         if (reg2_re_i == `READ_ENABLE && exe_reg_we_i == `WRITE_ENABLE && exe_reg_waddr_i == reg2_raddr_i) begin
             fw_op2_o = `FW_EXE_EXE;
@@ -72,5 +79,7 @@ module ForwardingUnit (
         end
     end
 
+    assign load_use_stall_o = 
+        mem_load_i && ((fw_op1_o == `FW_EXE_MEM) || (fw_op2_o == `FW_EXE_MEM));
 
 endmodule

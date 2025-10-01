@@ -22,7 +22,7 @@ module id_type_i (
     wire [4:0] rs1 = inst_i[19:15];
     wire [4:0] rs2 = inst_i[24:20];
 
-    wire isType_i;
+    wire       isType_i;
     assign isType_i = (opcode == `INST_TYPE_I);
 
     always @(*) begin
