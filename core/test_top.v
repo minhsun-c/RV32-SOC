@@ -49,6 +49,9 @@ module test_top (
     wire [ `DATA_WIDTH-1:0] exe_mem_data_o;
     wire [             3:0] exe_mem_op_o;
 
+    // exe -> hdu
+    wire                    exe_type_m_stall_o;
+
     // exe_mem -> mem
     wire [`RADDR_WIDTH-1:0] mem_reg_waddr_i;
     wire                    mem_reg_we_i;
@@ -123,6 +126,9 @@ module test_top (
 
         // from fw
         .load_hazard_i(load_use_stall_o),
+
+        // from exe
+        .m_type_stall_i(exe_type_m_stall_o),
 
         .stall_o(stall_o),
         .flush_o(flush_o)
@@ -261,6 +267,7 @@ module test_top (
 
     // EXE
     exe exe0 (
+        .clk_i(clk_i),
         .rst_i(rst_i),
 
         // from id_exe
@@ -279,13 +286,16 @@ module test_top (
         .mem_we_o  (exe_mem_we_o),
         .mem_addr_o(exe_mem_addr_o),
         .mem_data_o(exe_mem_data_o),
-        .mem_op_o  (exe_mem_op_o)
+        .mem_op_o  (exe_mem_op_o),
+
+        // to hdu
+        .exe_type_m_stall_o(exe_type_m_stall_o)
     );
 
     // exe_mem
     exe_mem exe_mem0 (
-        .rst_i(rst_i),
         .clk_i(clk_i),
+        .rst_i(rst_i),
 
         // from exe
         .reg_waddr_i(exe_reg_waddr_o),

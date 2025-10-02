@@ -24,7 +24,7 @@ module id_type_r (
     wire [4:0] rs2 = inst_i[24:20];
 
     wire       isType_r;
-    assign isType_r = (opcode == `INST_TYPE_R_M) && ((funct7 == 7'b0000000)||(funct7==7'b0100000));
+    assign isType_r = (opcode == `INST_TYPE_R_M);
 
     always @(*) begin
         if (isType_r) begin

@@ -1,6 +1,7 @@
 `include "defines.v"
 
 module exe (
+    input clk_i,
     input rst_i,
 
     // from id_exe
@@ -19,7 +20,10 @@ module exe (
     output reg                   mem_we_o,
     output reg [`ADDR_WIDTH-1:0] mem_addr_o,
     output reg [`DATA_WIDTH-1:0] mem_data_o,
-    output reg [            3:0] mem_op_o
+    output reg [            3:0] mem_op_o,
+
+    // to hdu
+    output exe_type_m_stall_o
 );
 
     wire [             6:0] opcode = inst_i[6:0];
@@ -68,6 +72,19 @@ module exe (
         .mem_op_o   (sl_mem_op_o)
     );
 
+    wire                   m_reg_we_o;
+    wire [`DATA_WIDTH-1:0] m_reg_wdata_o;
+    exe_type_m exe_type_m0 (
+        .clk_i      (clk_i),
+        .rst_i      (rst_i),
+        .inst_i     (inst_i),
+        .op1_i      (op1_i),
+        .op2_i      (op2_i),
+        .stall_o    (exe_type_m_stall_o),
+        .reg_wdata_o(m_reg_wdata_o),
+        .reg_we_o   (m_reg_we_o)
+    );
+
 
     always @(*) begin
         if (rst_i == 1'b1) begin
@@ -95,8 +112,8 @@ module exe (
                     mem_addr_o  = `ZERO;
                     mem_data_o  = `ZERO;
                     mem_op_o    = `MEM_NOP;
-                    reg_wdata_o = r_reg_wdata_o;
-                    reg_we_o    = r_reg_we_o;
+                    reg_wdata_o = r_reg_wdata_o | m_reg_wdata_o;
+                    reg_we_o    = r_reg_we_o | m_reg_we_o;
                 end
                 `INST_TYPE_LUI, `INST_TYPE_AUIPC: begin
                     reg_waddr_o = reg_waddr_i;
