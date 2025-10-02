@@ -11,12 +11,12 @@ module ForwardingUnit (
     input [`RADDR_WIDTH-1:0] exe_reg_waddr_i,
     input [`RDATA_WIDTH-1:0] exe_reg_wdata_i,
     input                    exe_reg_we_i,
+    input                    exe_load_i,
 
     // from mem
     input [`RADDR_WIDTH-1:0] mem_reg_waddr_i,
     input [`RDATA_WIDTH-1:0] mem_reg_wdata_i,
     input                    mem_reg_we_i,
-    input                    mem_load_i,
 
     // to hdu
     output load_use_stall_o,
@@ -79,6 +79,6 @@ module ForwardingUnit (
         end
     end
 
-    assign load_use_stall_o = mem_load_i && (fw_en1_o || fw_en2_o);
+    assign load_use_stall_o = exe_load_i && (fw_en1_o || fw_en2_o);
 
 endmodule

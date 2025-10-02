@@ -99,12 +99,12 @@ module test_top (
         .exe_reg_waddr_i(exe_reg_waddr_o),
         .exe_reg_wdata_i(exe_reg_wdata_o),
         .exe_reg_we_i   (exe_reg_we_o),
+        .exe_load_i     (exe_mem_op_o[3]),
 
         // from mem
         .mem_reg_waddr_i(mem_reg_waddr_o),
         .mem_reg_wdata_i(mem_reg_wdata_o),
         .mem_reg_we_i   (mem_reg_we_o),
-        .mem_load_i     (mem_op_i[3]),
 
         // to hdu
         .load_use_stall_o(load_use_stall_o),
