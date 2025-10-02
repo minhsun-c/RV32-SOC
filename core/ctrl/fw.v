@@ -79,7 +79,6 @@ module ForwardingUnit (
         end
     end
 
-    assign load_use_stall_o = 
-        mem_load_i && ((fw_op1_o == `FW_EXE_MEM) || (fw_op2_o == `FW_EXE_MEM));
+    assign load_use_stall_o = mem_load_i && (fw_en1_o || fw_en2_o);
 
 endmodule

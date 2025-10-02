@@ -42,7 +42,7 @@ $(PROG_BIN):
 rv32soc: obj_dir/V${TOP}.mk
 
 .PHONY : run
-run: ${PROG_BIN} obj_dir/V${TOP}.exe 
+run: indent ${PROG_BIN} obj_dir/V${TOP}.exe 
 	obj_dir/V${TOP} ${PROG_BIN}
 
 .PHONY : wave

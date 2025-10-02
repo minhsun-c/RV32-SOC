@@ -1,6 +1,6 @@
+#include <assert.h>
 #include <stdio.h>
 #include <string>
-#include <assert.h>
 #include "Vtest_top.h"
 #include "Vtest_top__Syms.h"
 #include "verilated_vcd_c.h"
@@ -35,8 +35,7 @@ int main(int argc, char **argv)
     Verilated::commandArgs(argc, argv);
     Verilated::traceEverOn(true);
 
-    if (argc < 2)
-    {
+    if (argc < 2) {
         printf("Please provide riscv test elf file\n");
         return -1;
     }
@@ -49,11 +48,11 @@ int main(int argc, char **argv)
 
     sim_mem_load_bin(top->test_top->data_ram0, string(argv[1]));
     printf("Load to memory:\n");
-    for (int i=0; i<=0x4c; i+=4) {
+    for (int i = 0; i <= 0x4c; i += 4) {
         printf("[%2x]: ", i);
-        for (int j=0; j<4; j++) {
+        for (int j = 0; j < 4; j++) {
             uint32_t tmp;
-            top->test_top->data_ram0->readByte(i+j, tmp);
+            top->test_top->data_ram0->readByte(i + j, tmp);
             printf("%02x", tmp);
         }
         printf("\n");
@@ -67,8 +66,7 @@ int main(int argc, char **argv)
     for (int i = 0; i < MAX_SIM_CYCLE; i++)
         one_cycle(top, tfp);
 
-    for (int i = 0; i < 32; i++)
-    {
+    for (int i = 0; i < 32; i++) {
         int x = sim_regs_read(top->test_top->regfile0, i);
         printf(" x%02d = %08x% --  ", i, x);
         if (i % 4 == 3)
@@ -76,11 +74,11 @@ int main(int argc, char **argv)
     }
 
     printf("After simulation:\n");
-    for (int i=0; i<=0x4c; i+=4) {
+    for (int i = 0; i <= 0x4c; i += 4) {
         printf("[%2x]: ", i);
-        for (int j=0; j<4; j++) {
+        for (int j = 0; j < 4; j++) {
             uint32_t tmp;
-            top->test_top->data_ram0->readByte(i+j, tmp);
+            top->test_top->data_ram0->readByte(i + j, tmp);
             printf("%02x", tmp);
         }
         printf("\n");
