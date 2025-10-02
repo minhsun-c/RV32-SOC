@@ -11,10 +11,10 @@ _start:
 
     la   x10, _base        # x10 = &base[0]
    0:	00000517          	auipc	a0,0x0
-   4:	03c50513          	addi	a0,a0,60 # 3c <_base>
+   4:	03450513          	addi	a0,a0,52 # 34 <_base>
     la   x11, _sink        # x11 = &sink[0]
    8:	00000597          	auipc	a1,0x0
-   c:	04458593          	addi	a1,a1,68 # 4c <_sink>
+   c:	03c58593          	addi	a1,a1,60 # 44 <_sink>
 
 # Case A
     lw   x5,  0(x10)      # load base[0]
@@ -24,35 +24,28 @@ _start:
     sw   x6,  0(x11)      # record result
   18:	0065a023          	sw	t1,0(a1)
 
-# Case C
+# Case B
     lw   x5,  4(x10)      # load base[1]
   1c:	00452283          	lw	t0,4(a0)
     sw   x5,  4(x11)      # hazard here (store data)
   20:	0055a223          	sw	t0,4(a1)
 
-# Case D
+# Case C
     lw   x5,  8(x10)      # load address into x5
   24:	00852283          	lw	t0,8(a0)
     sw   x1,  0(x5)       # hazard here (store address)
   28:	0012a023          	sw	ra,0(t0)
 
-# Case E
+# Case D
     lw   x5, 12(x10)      # load comparison value
   2c:	00c52283          	lw	t0,12(a0)
-    beq  x5, x0, ok
-  30:	00028463          	beqz	t0,38 <ok>
     sw   x0,  8(x11)      # if taken/wrong, mark fail path
-  34:	0005a423          	sw	zero,8(a1)
+  30:	0005a423          	sw	zero,8(a1)
 
-00000038 <ok>:
-ok:
-    sw   x5,  8(x11)      # mark pass path
-  38:	0055a423          	sw	t0,8(a1)
-
-0000003c <_base>:
-  3c:	00000011          	.word	0x00000011
-  40:	00000022          	.word	0x00000022
+00000034 <_base>:
+  34:	00000011          	.word	0x00000011
+  38:	00000022          	.word	0x00000022
 	...
 
-0000004c <_sink>:
+00000044 <_sink>:
 	...
