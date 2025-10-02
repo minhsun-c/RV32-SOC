@@ -48,7 +48,7 @@ int main(int argc, char **argv)
 
     sim_mem_load_bin(top->test_top->data_ram0, string(argv[1]));
     printf("Load to memory:\n");
-    for (int i = 0; i <= 0x4c; i += 4) {
+    for (int i = 0; i <= 0x50; i += 4) {
         printf("[%2x]: ", i);
         for (int j = 0; j < 4; j++) {
             uint32_t tmp;
