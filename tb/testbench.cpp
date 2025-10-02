@@ -5,7 +5,7 @@
 #include "Vtest_top__Syms.h"
 #include "verilated_vcd_c.h"
 
-#define MAX_SIM_CYCLE 200
+#define MAX_SIM_CYCLE 1000
 #define CLOCK_LEN 1
 vluint64_t main_time = 0;
 
@@ -48,7 +48,7 @@ int main(int argc, char **argv)
 
     sim_mem_load_bin(top->test_top->data_ram0, string(argv[1]));
     printf("Load to memory:\n");
-    for (int i = 0; i <= 0x50; i += 4) {
+    for (int i = 0; i <= 0x80; i += 4) {
         printf("[%2x]: ", i);
         for (int j = 0; j < 4; j++) {
             uint32_t tmp;
@@ -74,7 +74,7 @@ int main(int argc, char **argv)
     }
 
     printf("After simulation:\n");
-    for (int i = 0; i <= 0x4c; i += 4) {
+    for (int i = 0; i <= 0x80; i += 4) {
         printf("[%2x]: ", i);
         for (int j = 0; j < 4; j++) {
             uint32_t tmp;
