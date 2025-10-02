@@ -48,6 +48,16 @@ int main(int argc, char **argv)
     tfp->open("wave.vcd");
 
     sim_mem_load_bin(top->test_top->data_ram0, string(argv[1]));
+    printf("Load to memory:\n");
+    for (int i=0; i<=0x4c; i+=4) {
+        printf("[%2x]: ", i);
+        for (int j=0; j<4; j++) {
+            uint32_t tmp;
+            top->test_top->data_ram0->readByte(i+j, tmp);
+            printf("%02x", tmp);
+        }
+        printf("\n");
+    }
 
     top->rst_i = 1;
     for (int i = 0; i < 5; i++)
@@ -65,7 +75,8 @@ int main(int argc, char **argv)
             printf("\n");
     }
 
-    for (int i=0; i<=0x34; i+=4) {
+    printf("After simulation:\n");
+    for (int i=0; i<=0x4c; i+=4) {
         printf("[%2x]: ", i);
         for (int j=0; j<4; j++) {
             uint32_t tmp;
