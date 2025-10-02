@@ -12,16 +12,17 @@ module exe_type_m (
     output                        stall_o
 );
 
-    wire [6:0] opcode = inst_i[6:0];
-    wire [2:0] funct3 = inst_i[14:12];
-    wire [6:0] funct7 = inst_i[31:25];
+    wire [              6:0] opcode = inst_i[6:0];
+    wire [              2:0] funct3 = inst_i[14:12];
+    wire [              6:0] funct7 = inst_i[31:25];
 
-    // wire isType_m;
-    wire       isType_m = (opcode == `INST_TYPE_R_M) && (funct7 == 7'b0000001);
+    wire                     isType_m = (opcode == `INST_TYPE_R_M) && (funct7 == 7'b0000001);
 
-    reg [`DATA_WIDTH-1:0] a_o, b_o, div_result;
+    reg  [  `DATA_WIDTH-1:0] a_o;
+    reg  [  `DATA_WIDTH-1:0] b_o;
+    reg  [  `DATA_WIDTH-1:0] div_result;
+    reg  [`DATA_WIDTH*2-1:0] mult_result_i;
     reg is_q_operation, mult_req_o, div_req_o, mult_ready_i, div_ready_i;
-    reg [`DATA_WIDTH*2-1:0] mult_result_i;
 
     mul #(
         .XLEN(`DATA_WIDTH)
@@ -55,13 +56,20 @@ module exe_type_m (
     wire                     is_b_neg = op2_i[`DATA_WIDTH-1];
     wire                     is_b_zero = ~(|op2_i);
     wire                     signed_adjust = is_a_neg ^ is_b_neg;
-    reg  [`DATA_WIDTH*2-1:0] invert_result;
-    assign invert_result = (mult_req_o) ? ~mult_result_i + 1 : 64'b0;
+    wire [`DATA_WIDTH*2-1:0] invert_result = (mult_req_o) ? ~mult_result_i + 1 : 64'b0;
 
     always @(*) begin
-        reg_wdata_o = {32{mult_ready_i | div_ready_i}} & result;
         if (rst_i | ~isType_m) begin
-            reg_wdata_o    = `ZERO;
+            reg_wdata_o = `ZERO;
+        end else if (mult_ready_i | div_ready_i) begin
+            reg_wdata_o = result;
+        end else begin
+            reg_wdata_o = `ZERO;
+        end
+    end
+
+    always @(*) begin
+        if (rst_i | ~isType_m) begin
             reg_we_o       = `WRITE_DISABLE;
             a_o            = `ZERO;
             b_o            = `ZERO;

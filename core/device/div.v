@@ -1,14 +1,14 @@
 module div #(
     parameter XLEN = 32
 ) (
-    input                    clk_i,
-    input                    rst_i,
-    input       [XLEN-1 : 0] a_i,
-    input       [XLEN-1 : 0] b_i,
-    input                    req_i,
-    input  wire              is_q_i,
-    output reg  [XLEN-1 : 0] result_o,
-    output reg               ready_o
+    input                   clk_i,
+    input                   rst_i,
+    input      [XLEN-1 : 0] a_i,
+    input      [XLEN-1 : 0] b_i,
+    input                   req_i,
+    input                   is_q_i,
+    output reg [XLEN-1 : 0] result_o,
+    output reg              ready_o
 );
 
     wire is_a_zero, is_b_zero;
