@@ -99,6 +99,7 @@ module mem (
         end
     end
 
+    assign dpram_addr_o = mem_addr_i;
     assign dpram_ce_o = (mem_op_i != `MEM_NOP);
     assign dpram_we_o = mem_we_i;
 endmodule
