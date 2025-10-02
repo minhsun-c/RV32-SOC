@@ -9,6 +9,7 @@ module HazardDetectionUnit (
 
     // from exe
     input m_type_stall_i,
+    input jump_i,
 
     output reg [4:0] stall_o,
     output reg [4:0] flush_o
@@ -28,6 +29,9 @@ module HazardDetectionUnit (
 
         if (rst_i) begin
             // keep zeros
+        end else if (jump_i) begin
+            flush_o[IF_ID] = 1'b1;
+            flush_o[ID_EX] = 1'b1;
         end else if (load_hazard_i) begin
             stall_o[PC]    = 1'b1;
             stall_o[IF_ID] = 1'b1;

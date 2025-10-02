@@ -23,6 +23,7 @@ module id (
     output reg [`RDATA_WIDTH-1:0] op2_o,
     output reg                    reg_we_o,
     output reg [`RADDR_WIDTH-1:0] reg_waddr_o,
+    output     [ `ADDR_WIDTH-1:0] inst_addr_o,
 
     // from FW unit
     input                    fw_en1_o,
@@ -86,6 +87,8 @@ module id (
         .reg_we_o    (r_reg_we_o),
         .reg_waddr_o (r_reg_waddr_o)
     );
+
+    assign inst_addr_o = inst_addr_i;
 
     always @(*) begin
         if (rst_i) begin
@@ -159,6 +162,38 @@ module id (
                     inst_o       = inst_i;
                     reg1_raddr_o = rs1;
                     reg2_raddr_o = `ZERO_REG;
+                    reg1_re_o    = `READ_ENABLE;
+                    reg2_re_o    = `READ_DISABLE;
+                    op1_o_final  = reg1_rdata_i;
+                    op2_o_final  = `ZERO;
+                    reg_we_o     = `WRITE_ENABLE;
+                    reg_waddr_o  = rd;
+                end
+                `INST_TYPE_B: begin
+                    inst_o       = inst_i;
+                    reg1_raddr_o = rs1;
+                    reg2_raddr_o = rs2;
+                    reg1_re_o    = `READ_ENABLE;
+                    reg2_re_o    = `READ_ENABLE;
+                    op1_o_final  = reg1_rdata_i;
+                    op2_o_final  = reg2_rdata_i;
+                    reg_we_o     = `WRITE_DISABLE;
+                end
+                `INST_TYPE_JAL: begin
+                    inst_o       = inst_i;
+                    reg1_raddr_o = rs1;
+                    reg2_raddr_o = rs2;
+                    reg1_re_o    = `READ_DISABLE;
+                    reg2_re_o    = `READ_DISABLE;
+                    op1_o_final  = `ZERO;
+                    op2_o_final  = `ZERO;
+                    reg_we_o     = `WRITE_ENABLE;
+                    reg_waddr_o  = rd;
+                end
+                `INST_TYPE_JALR: begin
+                    inst_o       = inst_i;
+                    reg1_raddr_o = rs1;
+                    reg2_raddr_o = rs2;
                     reg1_re_o    = `READ_ENABLE;
                     reg2_re_o    = `READ_DISABLE;
                     op1_o_final  = reg1_rdata_i;

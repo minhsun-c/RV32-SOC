@@ -10,6 +10,7 @@ module exe (
     input                    reg_we_i,
     input [`RADDR_WIDTH-1:0] reg_waddr_i,
     input [`RDATA_WIDTH-1:0] inst_i,
+    input [ `ADDR_WIDTH-1:0] inst_addr_i,
 
     // to exe_mem, fw
     output reg [`RADDR_WIDTH-1:0] reg_waddr_o,
@@ -22,8 +23,12 @@ module exe (
     output reg [`DATA_WIDTH-1:0] mem_data_o,
     output reg [            3:0] mem_op_o,
 
+    // to pc
+    output reg [`ADDR_WIDTH-1:0] exe_bj_addr_o,
+
     // to hdu
-    output exe_type_m_stall_o
+    output     exe_type_m_stall_o,
+    output reg exe_bj_en_o
 );
 
     wire [             6:0] opcode = inst_i[6:0];
@@ -85,6 +90,17 @@ module exe (
         .reg_we_o   (m_reg_we_o)
     );
 
+    wire [`ADDR_WIDTH-1:0] b_jump_addr_o;
+    wire                   b_jump_enable_o;
+    exe_type_b_j exe_type_b_j0 (
+        .rst_i        (rst_i),
+        .inst_i       (inst_i),
+        .inst_addr_i  (inst_addr_i),
+        .op1_i        (op1_i),
+        .op2_i        (op2_i),
+        .jump_addr_o  (b_jump_addr_o),
+        .jump_enable_o(b_jump_enable_o)
+    );
 
     always @(*) begin
         if (rst_i == 1'b1) begin
@@ -95,6 +111,7 @@ module exe (
             mem_addr_o  = `ZERO;
             mem_data_o  = `ZERO;
             mem_op_o    = `MEM_NOP;
+            exe_bj_en_o = 1'b0;
         end else begin
             case (opcode)
                 `INST_TYPE_I: begin
@@ -105,6 +122,7 @@ module exe (
                     mem_addr_o  = `ZERO;
                     mem_data_o  = `ZERO;
                     mem_op_o    = `MEM_NOP;
+                    exe_bj_en_o = 1'b0;
                 end
                 `INST_TYPE_R_M: begin
                     reg_waddr_o = reg_waddr_i;
@@ -114,6 +132,7 @@ module exe (
                     mem_op_o    = `MEM_NOP;
                     reg_wdata_o = r_reg_wdata_o | m_reg_wdata_o;
                     reg_we_o    = r_reg_we_o | m_reg_we_o;
+                    exe_bj_en_o = 1'b0;
                 end
                 `INST_TYPE_LUI, `INST_TYPE_AUIPC: begin
                     reg_waddr_o = reg_waddr_i;
@@ -123,6 +142,7 @@ module exe (
                     mem_addr_o  = `ZERO;
                     mem_data_o  = `ZERO;
                     mem_op_o    = `MEM_NOP;
+                    exe_bj_en_o = 1'b0;
                 end
                 `INST_TYPE_S, `INST_TYPE_L: begin
                     reg_waddr_o = reg_waddr_i;
@@ -132,6 +152,40 @@ module exe (
                     mem_addr_o  = sl_mem_addr_o;
                     mem_data_o  = sl_mem_data_o;
                     mem_op_o    = sl_mem_op_o;
+                    exe_bj_en_o = 1'b0;
+                end
+                `INST_TYPE_B: begin
+                    reg_waddr_o   = `ZERO_REG;
+                    reg_wdata_o   = `ZERO;
+                    reg_we_o      = `WRITE_DISABLE;
+                    mem_we_o      = `WRITE_DISABLE;
+                    mem_addr_o    = `ZERO;
+                    mem_data_o    = `ZERO;
+                    mem_op_o      = `MEM_NOP;
+                    exe_bj_addr_o = b_jump_addr_o;
+                    exe_bj_en_o   = b_jump_enable_o;
+                end
+                `INST_TYPE_JAL: begin
+                    reg_waddr_o   = reg_waddr_i;
+                    reg_wdata_o   = inst_addr_i + 4;
+                    reg_we_o      = `WRITE_ENABLE;
+                    mem_we_o      = `WRITE_DISABLE;
+                    mem_addr_o    = `ZERO;
+                    mem_data_o    = `ZERO;
+                    mem_op_o      = `MEM_NOP;
+                    exe_bj_addr_o = b_jump_addr_o;
+                    exe_bj_en_o   = b_jump_enable_o;
+                end
+                `INST_TYPE_JALR: begin
+                    reg_waddr_o   = reg_waddr_i;
+                    reg_wdata_o   = inst_addr_i + 4;
+                    reg_we_o      = `WRITE_ENABLE;
+                    mem_we_o      = `WRITE_DISABLE;
+                    mem_addr_o    = `ZERO;
+                    mem_data_o    = `ZERO;
+                    mem_op_o      = `MEM_NOP;
+                    exe_bj_addr_o = (b_jump_addr_o + op1_i) & {{31{1'b1}}, 1'b0};
+                    exe_bj_en_o   = b_jump_enable_o;
                 end
                 default: begin
                     reg_waddr_o = `ZERO_REG;
@@ -141,6 +195,7 @@ module exe (
                     mem_addr_o  = `ZERO;
                     mem_data_o  = `ZERO;
                     mem_op_o    = `MEM_NOP;
+                    exe_bj_en_o = 1'b0;
                 end
             endcase
         end

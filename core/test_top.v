@@ -18,6 +18,7 @@ module test_top (
 
     // id -> id_exe
     wire [ `DATA_WIDTH-1:0] id_inst_o;
+    wire [ `ADDR_WIDTH-1:0] id_inst_addr_o;
     wire [`RDATA_WIDTH-1:0] id_op1_o;
     wire [`RDATA_WIDTH-1:0] id_op2_o;
     wire                    id_reg_we_o;
@@ -39,6 +40,7 @@ module test_top (
     wire                    id_exe_reg_we_o;
     wire [`RADDR_WIDTH-1:0] id_exe_reg_waddr_o;
     wire [ `DATA_WIDTH-1:0] id_exe_inst_o;
+    wire [ `ADDR_WIDTH-1:0] id_exe_inst_addr_o;
 
     // exe -> exe_mem
     wire [`RADDR_WIDTH-1:0] exe_reg_waddr_o;
@@ -51,6 +53,10 @@ module test_top (
 
     // exe -> hdu
     wire                    exe_type_m_stall_o;
+
+    // exe -> pc
+    wire [ `ADDR_WIDTH-1:0] jump_addr_i;
+    wire                    jump_en_i;
 
     // exe_mem -> mem
     wire [`RADDR_WIDTH-1:0] mem_reg_waddr_i;
@@ -129,6 +135,7 @@ module test_top (
 
         // from exe
         .m_type_stall_i(exe_type_m_stall_o),
+        .jump_i        (jump_en_i),
 
         .stall_o(stall_o),
         .flush_o(flush_o)
@@ -145,7 +152,11 @@ module test_top (
         .ce_o(ce_wire),
 
         // from hdu
-        .stall_i(stall_o[0])
+        .stall_i(stall_o[0]),
+
+        // from exe
+        .jump_addr_i(jump_addr_i),
+        .jump_en_i  (jump_en_i)
     );
 
     dpram #(
@@ -206,6 +217,7 @@ module test_top (
 
         //to id_exe
         .inst_o     (id_inst_o),
+        .inst_addr_o(id_inst_addr_o),
         .op1_o      (id_op1_o),
         .op2_o      (id_op2_o),
         .reg_we_o   (id_reg_we_o),
@@ -251,6 +263,7 @@ module test_top (
         .op2_i      (id_op2_o),
         .reg_we_i   (id_reg_we_o),
         .reg_waddr_i(id_reg_waddr_o),
+        .inst_addr_i(id_inst_addr_o),
 
         //to exe
         .op1_o      (id_exe_op1_o),
@@ -258,6 +271,7 @@ module test_top (
         .reg_we_o   (id_exe_reg_we_o),
         .reg_waddr_o(id_exe_reg_waddr_o),
         .inst_o     (id_exe_inst_o),
+        .inst_addr_o(id_exe_inst_addr_o),
 
         // hdu
         .stall_i(stall_o[2]),
@@ -276,6 +290,7 @@ module test_top (
         .reg_we_i   (id_exe_reg_we_o),
         .reg_waddr_i(id_exe_reg_waddr_o),
         .inst_i     (id_exe_inst_o),
+        .inst_addr_i(id_exe_inst_addr_o),
 
         // to exe_mem, fw
         .reg_waddr_o(exe_reg_waddr_o),
@@ -289,7 +304,11 @@ module test_top (
         .mem_op_o  (exe_mem_op_o),
 
         // to hdu
-        .exe_type_m_stall_o(exe_type_m_stall_o)
+        .exe_type_m_stall_o(exe_type_m_stall_o),
+        .exe_bj_en_o       (jump_en_i),
+
+        // to pc
+        .exe_bj_addr_o(jump_addr_i)
     );
 
     // exe_mem
